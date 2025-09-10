@@ -31,7 +31,23 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+         $validated = $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'status' => 'required|in:to_do,in_progress,done',
+        'assigned_to' => 'nullable|exists:users,id',
+    ]);
+
+    $task = \App\Models\Task::create([
+        'title' => $validated['title'],
+        'description' => $validated['description'] ?? null,
+        'status' => $validated['status'],
+        'created_by' => auth()->id(),
+        'assigned_user_id' => $validated['assigned_to'] ?? null,
+    ]);
+
+    // Optionally, redirect or return a response
+    return redirect()->route('dashboard')->with('success', 'Task created!');
     }
 
     /**
