@@ -71,7 +71,22 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
-        //
+        $this->authorize('update', $task);
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'status' => 'required|in:to_do,in_progress,done',
+            'assigned_to' => 'nullable|exists:users,id',
+        ]);
+
+        $task->update([
+            'title' => $validated['title'],
+            'description' => $validated['description'] ?? null,
+            'status' => $validated['status'],
+            'assigned_user_id' => $validated['assigned_to'] ?? null,
+        ]);
+
+        return redirect()->route('dashboard')->with('success', 'Task updated!');
     }
 
     /**
@@ -79,6 +94,8 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        //
+        $this->authorize('delete', $task);
+        $task->delete();
+        return redirect()->route('dashboard')->with('success', 'Task deleted!');
     }
 }

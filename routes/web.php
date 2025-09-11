@@ -3,7 +3,6 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,8 +21,18 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+use App\Models\User;
+use Inertia\Inertia;
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    $tasks = \App\Models\Task::with(['assignedUser', 'creator'])->get();
+    $users = User::all();
+    return Inertia::render('Dashboard', [
+        'tasks' => $tasks,
+        'users' => $users,
+        'auth' => [
+            'user' => auth()->user(),
+        ],
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
