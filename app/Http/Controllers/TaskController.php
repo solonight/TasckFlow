@@ -12,7 +12,11 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = auth()->user()->tasks()->with('assignedUser')->get();
+        $userId = auth()->id();
+        $tasks = Task::where('created_by', $userId)
+            ->orWhere('assigned_user_id', $userId)
+            ->with('assignedUser')
+            ->get();
         return view('tasks.index', compact('tasks'));
     }
 

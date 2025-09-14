@@ -24,7 +24,11 @@ Route::get('/', function () {
 use App\Models\User;
 use Inertia\Inertia;
 Route::get('/dashboard', function () {
-    $tasks = \App\Models\Task::with(['assignedUser', 'creator'])->get();
+    $userId = auth()->id();
+    $tasks = \App\Models\Task::with(['assignedUser', 'creator'])
+        ->where('created_by', $userId)
+        ->orWhere('assigned_user_id', $userId)
+        ->get();
     $users = User::all();
     return Inertia::render('Dashboard', [
         'tasks' => $tasks,

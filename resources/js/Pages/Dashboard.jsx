@@ -33,15 +33,6 @@ export default function Dashboard({ auth, tasks = [], users = [] }) {
         >
             <Head title="Dashboard" />
             <div className="py-12">
-                {/* Assign Task Button */}
-                <div className="mb-6 flex justify-end">
-                    <button
-                        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                        onClick={() => setShowAssignForm(true)}
-                    >
-                        Assign New Task
-                    </button>
-                </div>
                 {/* Assign Task Form Modal */}
                 {showAssignForm && (
                     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
@@ -177,6 +168,15 @@ export default function Dashboard({ auth, tasks = [], users = [] }) {
                         </div>
                     </div>
                 </div>
+                {/* Assign Task Button */}
+                <div className="mb-6 flex justify-center">
+                    <button
+                        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                        onClick={() => setShowAssignForm(true)}
+                    >
+                        Assign New Task
+                    </button>
+                </div>
                 {/* Tasks Grid */}
                 <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {tasks.length === 0 ? (
@@ -210,6 +210,16 @@ export default function Dashboard({ auth, tasks = [], users = [] }) {
                                         {task.assigned_user
                                             ? task.assigned_user.name
                                             : "Unassigned"}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between items-center text-sm mt-1">
+                                    <span className="font-semibold">
+                                        Created by:
+                                    </span>{" "}
+                                    <span>
+                                        {task.creator
+                                            ? task.creator.name
+                                            : "Unknown"}
                                     </span>
                                 </div>
                             </div>

@@ -35,6 +35,8 @@ class RegisteredUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'is_admin' => 'boolean',
+            'admin_secret_key' => 'required_if:is_admin,true',
         ]);
 
         $user = User::create([
@@ -42,12 +44,20 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
-        $user->addRole('admin');
+
+        if ($request->is_admin) {
+            $adminSecret = env('ADMIN_SECRET_KEY');
+            if ($request->admin_secret_key === $adminSecret) {
+                $user->addRole('admin');
+            } else {
+                // Optionally delete user if created
+                $user->delete();
+                return back()->withErrors(['admin_secret_key' => 'Invalid admin secret key.'])->withInput();
+            }
+        }
 
         event(new Registered($user));
-
         Auth::login($user);
-
         return redirect(RouteServiceProvider::HOME);
     }
 }
